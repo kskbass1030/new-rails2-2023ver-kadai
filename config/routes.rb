@@ -1,16 +1,15 @@
 Rails.application.routes.draw do
-  
   devise_for :admins, :controllers => {
     :sessions => 'admins/sessions'
   }
- 
+
   devise_scope :admin do
     get "dashboard", :to => "dashboard#index"
     get "dashboard/login", :to => "admins/sessions#new"
     post "dashboard/login", :to => "admins/sessions#create"
     delete "dashboard/logout", :to => "admins/sessions#destroy"
   end
-  
+
   namespace :dashboard do
     resources :users, only: [:index, :destroy]
     resources :major_categories, except: [:new]
@@ -24,38 +23,41 @@ Rails.application.routes.draw do
     end
     resources :orders, only: [:index]
   end
-  
+
+
   devise_for :users, :controllers => {
-  :registrations => 'users/registrations',
-  :sessions => 'users/sessions',
-  :passwords => 'users/passwords',
-  :confirmations => 'users/confirmations',
-  :unlocks => 'users/unlocks',
-}
+    :registrations => 'users/registrations',
+    :sessions => 'users/sessions',
+    :passwords => 'users/passwords',
+    :confirmations => 'users/confirmations',
+    :unlocks => 'users/unlocks',
+  }
 
-devise_scope :user do
-  root :to => "web#index"
-  get "signup", :to => "users/registrations#new"
-  get "verify", :to => "users/registrations#verify"
-  get "login", :to => "users/sessions#new"
-  delete "logout", :to => "users/sessions#destroy"
-end
-
-resource :users, only: [:edit, :update] do
-  collection do
-    get "cart", :to => "shopping_carts#index"
-    post "cart/create", :to => "shopping_carts#create"
-    delete "cart", :to => "shopping_carts#destroy"
-    get "mypage", :to => "users#mypage"
-    get "mypage/edit", :to => "users#edit"
-    get "mypage/address/edit", :to => "users#edit_address"
-    put "mypage", :to => "users#update"
-    get "mypage/edit_password", :to =>"users#edit_password"
-    put "mypage/password", :to => "users#update_password"
-    get "mypage/favorite", :to => "users#favorite"
-    delete "mypage/delete", :to => "users#destroy"
+  devise_scope :user do
+    root :to => "web#index"
+    get "signup", :to => "users/registrations#new"
+    get "verify", :to => "users/registrations#verify"
+    get "login", :to => "users/sessions#new"
+    delete "logout", :to => "users/sessions#destroy"
   end
-end
+
+  resource :users, only: [:edit, :update] do
+    collection do
+      get    "cart",               :to => "shopping_carts#index"
+      delete "cart",               :to => "shopping_carts#destroy"
+      post   "cart/create",        :to => "shopping_carts#create"
+      get    "mypage",                 :to => "users#mypage"
+      put    "mypage",                 :to => "users#update"
+      get    "mypage/edit",            :to => "users#edit"
+      get    "mypage/edit_password",   :to => "users#edit_password"
+      delete "mypage/delete",          :to => "users#destroy"
+      get    "mypage/address/edit",    :to => "users#edit_address"
+      put    "mypage/password",        :to => "users#update_password"
+      get    "mypage/favorite",        :to => "users#favorite"
+      get    "mypage/cart_history",    :to => "users#cart_history_index", :as => "mypage_cart_histories"
+      get    "mypage/cart_history/:num", :to => "users#cart_history_show", :as => "mypage_cart_history"
+    end
+  end
 
   resources :products do
     member do
